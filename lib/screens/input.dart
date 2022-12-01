@@ -1,14 +1,13 @@
-import 'package:bmi_calculator/results_page.dart';
+import 'package:bmi_calculator/screens/results_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'reusableContainer.dart';
-import 'iconContent.dart';
-import 'constants.dart';
-import 'refactoredMethods.dart';
-
-double sliderValue = 165;
-
+import '../bmiCalculator.dart';
+import '../components/reusableContainer.dart';
+import '../components/iconContent.dart';
+import '../components/rowWithNUmAndUnit.dart';
+import '../constants.dart';
+import '../refactoredMethods.dart';
+import '../components/roundIconButton.dart';
 
 class Input extends StatefulWidget {
   const Input({Key? key}) : super(key: key);
@@ -19,6 +18,7 @@ class Input extends StatefulWidget {
 class _InputState extends State<Input> {
   Color maleColor = inactiveContainerColour;
   Color femaleColor = inactiveContainerColour;
+  int height = 165;
   Gender? genderType;
   int weight = 65;
   int age = 25;
@@ -76,28 +76,28 @@ class _InputState extends State<Input> {
                     'HEIGHT',
                     style: kLabelTextStyle(),
                   ),
-                  RowWithNumAndUint(sliderValue.round().toString(), 'cm'),
+                  RowWithNumAndUint(height.toString(), 'cm'),
                   SliderTheme(
                     data: SliderTheme.of(context).copyWith(
-                      thumbShape: RoundSliderThumbShape(
+                      thumbShape: const RoundSliderThumbShape(
                         enabledThumbRadius: 15,
                       ),
-                      overlayShape: RoundSliderOverlayShape(
+                      overlayShape: const RoundSliderOverlayShape(
                         overlayRadius: 30,
                       ),
                       thumbColor: const Color(0xFFEB1555),
                       overlayColor: const Color(0x29EB1555),
-                      activeTrackColor: Color(0xFFEB1555),
-                      inactiveTrackColor: Color(0xFF7C7879),
+                      activeTrackColor: const Color(0xFFEB1555),
+                      inactiveTrackColor: const Color(0xFF7C7879),
                       trackHeight: 2,
                     ),
                     child: Slider(
-                        value: sliderValue,
+                        value: height.toDouble(),
                         min: 30,
                         max: 240,
                         onChanged: (double value) {
                           setState(() {
-                            sliderValue = value;
+                            height = value.toInt();
                           });
                         }),
                   ),
@@ -123,22 +123,21 @@ class _InputState extends State<Input> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        RoundIconButton(FontAwesomeIcons.minus,(){
+                        RoundIconButton(FontAwesomeIcons.minus, () {
                           setState(() {
                             weight--;
                           });
                         }),
-                        SizedBox(width: 15,),
-                        RoundIconButton(FontAwesomeIcons.plus,(){
+                        const SizedBox(
+                          width: 15,
+                        ),
+                        RoundIconButton(FontAwesomeIcons.plus, () {
                           setState(() {
                             weight++;
                           });
                         })
-
                       ],
                     ),
-
-
                   ],
                 ),
               ),
@@ -158,18 +157,19 @@ class _InputState extends State<Input> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        RoundIconButton(FontAwesomeIcons.minus,(){
+                        RoundIconButton(FontAwesomeIcons.minus, () {
                           setState(() {
                             age--;
                           });
                         }),
-                        SizedBox(width: 15,),
-                        RoundIconButton(FontAwesomeIcons.plus,(){
+                        const SizedBox(
+                          width: 15,
+                        ),
+                        RoundIconButton(FontAwesomeIcons.plus, () {
                           setState(() {
                             age++;
                           });
                         })
-
                       ],
                     ),
                   ],
@@ -179,15 +179,25 @@ class _InputState extends State<Input> {
           ],
         ),
         GestureDetector(
-          onTap: (){
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const ResultPage()),
-            );
+          onTap: () {
+            setState(() {
+              BMICalculator calculate = BMICalculator(weight, height);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ResultPage(
+                    calculate.calculateBMI(),
+                    calculate.getResult(),
+                    calculate.getInterpretation(),
+                  ),
+                ),
+              );
+            });
+
           },
           child: Container(
             // margin: EdgeInsets.only(top: 10),
-            color: Color(0xFFEB1555),
+            color: const Color(0xFFEB1555),
             width: double.infinity,
             height: 43.428,
             // margin: EdgeInsets.only(top: 10),
@@ -195,18 +205,14 @@ class _InputState extends State<Input> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
                 Text(
-                  'Calculate',
+                  'CALCULATE',
                   style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                 )
               ],
             ),
           ),
-        ),
+        )
       ],
     );
   }
 }
-
-
-
-
